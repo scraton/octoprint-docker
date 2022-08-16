@@ -25,6 +25,8 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/*
 
 RUN useradd -m --home-dir /opt/octoprint octoprint \
+ && usermod -aG tty octoprint \
+ && usermod -aG dialout octoprint \
  && mkdir -p /data/octoprint /data/plugins \
  && chown -R octoprint:octoprint /data
 
