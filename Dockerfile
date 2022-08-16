@@ -24,26 +24,25 @@ RUN apt-get update \
  && python -m pip install --upgrade pip \
  && rm -rf /var/lib/apt/lists/*
 
-RUN useradd -m --home-dir /opt/octoprint octoprint \
+RUN useradd -m --home-dir /data/octoprint octoprint \
  && usermod -aG tty octoprint \
  && usermod -aG dialout octoprint \
- && mkdir -p /data/octoprint /data/plugins \
+ && mkdir -p /data/plugins \
  && chown -R octoprint:octoprint /data
-
-WORKDIR /opt/octoprint
-USER octoprint
 
 ARG OCTOPRINT_VERSION
 ENV OCTOPRINT_VERSION="${OCTOPRINT_VERSION:-master}"
 
-ENV PIP_USER="true"
-ENV PYTHONUSERBASE="/data/plugins"
-ENV PATH="${PYTHONUSERBASE}/bin:/opt/octoprint/.local/bin:${PATH}"
-
+WORKDIR /opt/octoprint
 RUN curl -fsSLO --compressed https://github.com/OctoPrint/OctoPrint/archive/${OCTOPRINT_VERSION}.tar.gz \
  && tar -zxvf ${OCTOPRINT_VERSION}.tar.gz --strip-components 1 -C /opt/octoprint --no-same-owner \
- && rm ${OCTOPRINT_VERSION}.tar.gz \
- && pip install --user .
+ && pip install . \
+ && rm ${OCTOPRINT_VERSION}.tar.gz
+
+USER octoprint
+ENV PIP_USER="true"
+ENV PYTHONUSERBASE="/data/plugins"
+ENV PATH="${PYTHONUSERBASE}/bin:${PATH}"
 
 WORKDIR /data
 EXPOSE 5000
