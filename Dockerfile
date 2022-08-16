@@ -11,6 +11,7 @@ RUN apt-get update \
       fontconfig \
       g++ \
       git \
+      gphoto2 \
       libjpeg-dev \
       libjpeg62-turbo \
       libprotobuf-dev \
@@ -30,6 +31,17 @@ RUN useradd -m --home-dir /data/octoprint octoprint \
  && mkdir -p /data/plugins \
  && chown -R octoprint:octoprint /data
 
+ARG MJPG_STREAMER_VERSION
+ENV MJPG_STREAMER_VERSION="${MJPG_STREAMER_VERSION:-master}"
+
+WORKDIR /opt/mjpg-streamer
+RUN curl -fsSLO --compressed https://github.com/jacksonliam/mjpg-streamer/archive/${MJPG_STREAMER_VERSION}.tar.gz \
+ && tar -zxvf ${MJPG_STREAMER_VERSION}.tar.gz -C /opt/mjpg-streamer \
+ && cd /opt/mjpg-streamer/mjpg-streamer-master/mjpg-streamer-experimental \
+ && make \
+ && make install \
+ && rm -rf /opt/mjpg-streamer
+
 ARG OCTOPRINT_VERSION
 ENV OCTOPRINT_VERSION="${OCTOPRINT_VERSION:-master}"
 
@@ -38,6 +50,8 @@ RUN curl -fsSLO --compressed https://github.com/OctoPrint/OctoPrint/archive/${OC
  && tar -zxvf ${OCTOPRINT_VERSION}.tar.gz --strip-components 1 -C /opt/octoprint --no-same-owner \
  && pip install . \
  && rm ${OCTOPRINT_VERSION}.tar.gz
+
+COPY bin/ /usr/local/bin
 
 USER octoprint
 ENV PIP_USER="true"
@@ -48,4 +62,4 @@ WORKDIR /data
 EXPOSE 5000
 VOLUME /data
 
-CMD ["octoprint", "serve", "--iknowwhatimdoing", "--host", "0.0.0.0", "--port", "5000", "--basedir", "/data/octoprint"]
+CMD ["start_octoprint"]

@@ -1,0 +1,7 @@
+#!/bin/sh
+
+exec octoprint serve \
+  --iknowwhatimdoing \
+  --host 0.0.0.0 \
+  --port 5000 \
+  --basedir /data/octoprint
