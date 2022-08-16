@@ -1,0 +1,18 @@
+version: '3.3'
+
+services:
+  octoprint:
+    image: octoprint:latest
+    build:
+      context: .
+      args:
+        OCTOPRINT_VERSION: master
+    ports:
+    - 5000:5000
+    volumes:
+    - octoprint:/data
+    environment:
+    - TZ=America/Chicago
+
+volumes:
+  octoprint: {}
