@@ -31,17 +31,6 @@ RUN useradd -m --home-dir /data/octoprint octoprint \
  && mkdir -p /data/plugins \
  && chown -R octoprint:octoprint /data
 
-ARG MJPG_STREAMER_VERSION
-ENV MJPG_STREAMER_VERSION="${MJPG_STREAMER_VERSION:-master}"
-
-WORKDIR /opt/mjpg-streamer
-RUN curl -fsSLO --compressed https://github.com/jacksonliam/mjpg-streamer/archive/${MJPG_STREAMER_VERSION}.tar.gz \
- && tar -zxvf ${MJPG_STREAMER_VERSION}.tar.gz -C /opt/mjpg-streamer \
- && cd /opt/mjpg-streamer/mjpg-streamer-master/mjpg-streamer-experimental \
- && make \
- && make install \
- && rm -rf /opt/mjpg-streamer
-
 ARG OCTOPRINT_VERSION
 ENV OCTOPRINT_VERSION="${OCTOPRINT_VERSION:-master}"
 
